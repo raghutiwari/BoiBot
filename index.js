@@ -5,7 +5,7 @@ const keepAlive = require("./server.js")
 const db = new Database()
 const client = new Discord.Client()
 
-const SERVER_NAME = "Testing21"
+const SERVER_NAME = "Testing2"
 const CHANNEL_NAME = "bois-chet"
 
 const sadWords = ["sad", "depressed", "unhappy", "angry"]
@@ -19,92 +19,106 @@ const startedEncouragements = [
 const boiBirthdays = {
   "data" : [
     {
-      "name": "KD boi",
+      "name": "Dhote",
+      "bdayday": "4",
+      "bdaymonth": "02",
+      "bdayDoneForYear": "2021"
+    },
+    {
+      "name": "Snehaj",
+      "bdayday": "18",
+      "bdaymonth": "02",
+      "bdayDoneForYear": "2021"
+    },
+    {
+      "name": "Milind",
+      "bdayday": "21",
+      "bdaymonth": "02",
+      "bdayDoneForYear": "2021"
+    },
+    {
+      "name": "Aseem",
+      "bdayday": "01",
+      "bdaymonth": "03",
+      "bdayDoneForYear": "2021"
+    },
+    {
+      "name": "Shashwat",
+      "bdayday": "11",
+      "bdaymonth": "04",
+      "bdayDoneForYear": "2021"
+    },
+    {
+      "name": "Virat",
+      "bdayday": "09",
+      "bdaymonth": "05",
+      "bdayDoneForYear": "2021"
+    },
+    {
+      "name": "Anish",
+      "bdayday": "04",
+      "bdaymonth": "08",
+      "bdayDoneForYear": "2021"
+    },
+    {
+      "name": "Varun",
+      "bdayday": "25",
+      "bdaymonth": "08",
+      "bdayDoneForYear": "2021"
+    },
+    {
+      "name": "Abhishek",
+      "bdayday": "10",
+      "bdaymonth": "09",
+      "bdayDoneForYear": "2021"
+    },
+    {
+      "name": "Raghu",
       "bdayday": "13",
       "bdaymonth": "10",
       "bdayDoneForYear": "2020"
     },
     {
-      "name": "Rajzzz",
-      "bdayday": "14",
+      "name": "Pranav",
+      "bdayday": "03",
+      "bdaymonth": "10",
+      "bdayDoneForYear": "2021"
+    },
+    {
+      "name": "KD",
+      "bdayday": "22",
+      "bdaymonth": "10",
+      "bdayDoneForYear": "2020"
+    },
+    {
+      "name": "Raj",
+      "bdayday": "25",
       "bdaymonth": "10",
       "bdayDoneForYear": "2020"
     },
     {
       "name": "Maheshwari",
-      "bdayday": "15",
-      "bdaymonth": "10",
+      "bdayday": "04",
+      "bdaymonth": "11",
       "bdayDoneForYear": "2020"
     },
     {
-      "name": "Taori Boi",
-      "bdayday": "16",
-      "bdaymonth": "10",
-      "bdayDoneForYear": "2020"
-    },
-    {
-      "name": "Milinoo",
-      "bdayday": "11",
-      "bdaymonth": "10",
-      "bdayDoneForYear": "2020"
-    },
-    {
-      "name": "Dhotess",
-      "bdayday": "11",
-      "bdaymonth": "10",
-      "bdayDoneForYear": "2020"
-    },
-    {
-      "name": "Seemuu",
-      "bdayday": "11",
-      "bdaymonth": "10",
-      "bdayDoneForYear": "2020"
-    },
-    {
-      "name": "Shankar ji",
-      "bdayday": "11",
-      "bdaymonth": "10",
-      "bdayDoneForYear": "2020"
-    },
-    {
-      "name": "Viru boi",
-      "bdayday": "11",
-      "bdaymonth": "10",
-      "bdayDoneForYear": "2020"
-    },
-    {
-      "name": "Phalakk",
-      "bdayday": "11",
-      "bdaymonth": "10",
-      "bdayDoneForYear": "2020"
-    },
-    {
-      "name": "Anishh",
-      "bdayday": "11",
-      "bdaymonth": "10",
-      "bdayDoneForYear": "2020"
-    },
-    {
-      "name": "Pranav boii",
-      "bdayday": "11",
-      "bdaymonth": "10",
-      "bdayDoneForYear": "2020"
-    },
-    {
-      "name": "Gopal",
-      "bdayday": "11",
-      "bdaymonth": "10",
+      "name": "Taori",
+      "bdayday": "20",
+      "bdaymonth": "12",
       "bdayDoneForYear": "2020"
     }
   ]
 }
-db.delete("birthdays1").then(() => {});
-db.delete("birthdays2").then(() => {});
-db.delete("birthdays3").then(() => {});
-db.delete("birthdays4").then(() => {});
-db.delete("birthdays5").then(() => {});
-db.delete("birthdays6").then(() => {});
-// to be removed in actual server
+// db.delete("birthdays1").then(() => {});
+// db.delete("birthdays2").then(() => {});
+// db.delete("birthdays3").then(() => {});
+// db.delete("birthdays4").then(() => {});
+// db.delete("birthdays5").then(() => {});
+// db.delete("birthdays6").then(() => {});
+
+// To do
+// // to be removed in actual server
 db.delete("birthdays7").then(() => {});
 
 db.get("birthdays7").then(birthdays7 => {
@@ -119,35 +133,12 @@ db.get("birthdays7").then(birthdays7 => {
 //   console.log(bday[0].bdaymonth)
 // })
 
-console.log(db.get("birthdays"))
-
 db.get("encouragements").then(encouragements => {
   if (!encouragements || encouragements.length < 1) {
     db.set("encouragements", startedEncouragements)   
   }
 })
 
-db.get("responding").then(value => {
-  if (value == null) {
-    db.set("responding", true)
-  }
-})
-
-function updateEncouragements(encouragingMessage) {
-  db.get("encouragements").then(encouragements => {
-    encouragements.push([encouragingMessage])
-    db.set("encouragements", encouragements)
-  })
-}
-
-function deleteEncouragements(index) {
-  db.get("encouragements").then(encouragements => {
-    if (encouragements.length > index) {
-      encouragements.splice(index, 1)
-      db.set("encouragments", encouragements)
-    }
-  })
-}
 
 function getQuote() {
   return fetch("https://zenquotes.io/api/random")
@@ -156,6 +147,18 @@ function getQuote() {
     })
     .then(data => {
       return data[0]["q"] + " - " + data[0]["a"]
+    })
+}
+
+function getRandomMeme() {
+  return fetch("https://meme-api.herokuapp.com/gimme")
+    .then(res => {
+      return res.json()
+      console.log(res.json())
+    })
+    .then(data => {
+      const lastIndex = data["preview"].length - 1
+      return data["preview"][lastIndex]
     })
 }
 
@@ -187,27 +190,29 @@ function checkBday(channel) {
   /**
    * We iterate through the DB and check if today is anyone's birthday. If it is then we just simply send the bday message and update the bdayDoneForYear to avoid any repeated wishes.
    */
-  db.get("birthdays7").then(birthdays7 => {
-  const bdays = birthdays7["data"];
-     console.log("When updating DB\n")
-     console.log(birthdays7["data"])
-    for (bday of bdays) {
-    if ((currentMonth === bday.bdaymonth && currentDay === bday.bdayday) && (currentYear > bday.bdayDoneForYear)) {
+  try {
+    db.get("birthdays7").then(birthdays7 => {
+    const bdays = birthdays7["data"];
+      for (bday of bdays) {
+      if ((currentMonth === bday.bdaymonth && currentDay === bday.bdayday) && (currentYear > bday.bdayDoneForYear)) {
 
-      channel.send("Happy Birthday " + bday.name + "!!", {files: ["resources/images/happyBday.jpg"]})
-      isBdaySetToday = 1;
-      console.log("isbdayset? " + isBdaySetToday)
-      bdayBoiName = bday.name;
-      bday.bdayDoneForYear = currentYear;
-    }
+        channel.send("Happy Birthday " + bday.name + "!!", {files: ["resources/images/happyBday.jpg"]})
+        isBdaySetToday = 1;
+        bdayBoiName = bday.name;
+        bday.bdayDoneForYear = currentYear;
+      }
 
-    }
-    //if the bday has already occured for the year then we persist it in the DB so to not check for it after wishing.
-    if(isBdaySetToday === 1) {
-    db.set("birthdays7", birthdays7)
-    }
-
-  })   
+      }
+      //if the bday has already occured for the year then we persist it in the DB so to not check for it after wishing.
+      if(isBdaySetToday === 1) {
+      db.set("birthdays7", birthdays7)
+      }
+      //channel.send("dd")
+    }) 
+  } catch (err) {
+    console.log("Bas aa gya error")
+  }
+  
 
 }
 
@@ -244,7 +249,10 @@ const initialMessageEmbed = new Discord.MessageEmbed()
 		{ name: 'For Help', value: '!help' },
 		{ name: 'To get birthdays of all bois', value: '!birthdays'},
     { name: 'To get birthday of a specific boi', value: '!birthday {boiName} ((Prefer their original first name in the command :P)'},
-		{ name: 'To play a game of scribble', value: '!scribble'},
+		{ name: 'To get a random meme from reddit', value: '!meme'},
+    {
+      name: 'To get randomly inspired', value: '!inspire'
+    },
     { name: 'To play a song', value: '!play {song-name}'}
 	)
 	// .setImage('https://replit.com/@RaghuTiwari/BoiBot#resources/images/boiBotThumbnail.png')
@@ -255,7 +263,7 @@ const initialMessageEmbed = new Discord.MessageEmbed()
 /**
  * Method to call when the client is ready to recieve bot interaction.
  */
-client.on("ready", async () => {
+client.on("ready", () => {
   // get Bot user tag
   console.log(`Logged in as ${client.user.tag}!`)
 
@@ -272,10 +280,14 @@ client.on("ready", async () => {
     return chan.type === "text" && chan.name === CHANNEL_NAME
   }).values().next().value
 
-  channel.send(initialMessageEmbed);
+  //channel.send(initialMessageEmbed);
 
   // check if the current day is a birthday of someone
-  setInterval(checkBday, 3000, channel)
+  try {
+    setInterval(checkBday, 3000, channel)
+  } catch(err) {
+    console.log("bas aa gya trycatch me");
+  }
 
 })
 
@@ -290,59 +302,117 @@ function getServerByName(map, searchValue) {
   return -1
 }
 
+const birthdaysEmbed = new Discord.MessageEmbed()
+	.setColor('#ff5733')
+	.setTitle('BOIBOT')
+	.setDescription('Bois, so ye rahe sab k birthdays. Dekh lo re.')
+	.setTimestamp()
+	.setFooter('Chalo ho gya. Bye Bye.');
+
+
 client.on("message", msg => {
 
   if (msg.author.bot) {
     return;
   }
 
-  if (msg.content === "$inspire") {
+  /**
+   * Get a random quote
+   */
+  if (msg.content === "!inspire") {
     getQuote().then(quote => msg.channel.send(quote))
   }
 
-  if (msg.content.toLowerCase().startsWith("bhai help")) {
+  /**
+   * Get a random meme
+   */
+  if (msg.content.toLowerCase() === "!meme") {
+    getRandomMeme().then(meme => msg.channel.send(meme))
+  }
+
+  /**
+   * Get help option with all the commands
+   */
+  if (msg.content.toLowerCase().startsWith("bhai help") || msg.content.toLowerCase().startsWith("!help")) {
       msg.channel.send(helpMessageEmbed);
   }
 
-  db.get("responding").then(responding => {
-    if (responding && sadWords.some(word => msg.content.includes(word))) {
-      db.get("encouragements").then(encouragements => {
-          const encouragement = encouragements[Math.floor(Math.random() *
-          encouragements.length)]
-          msg.reply(encouragement)
-      })
-      
-    }   
-  })
-
-
-  if (msg.content.startsWith("$new")) {
-    encouragingMessage = msg.content.split("$new ")[1]
-    updateEncouragements(encouragingMessage)
-    msg.channel.send("New encouraging message added.")
-  }
-
-  if (msg.content.startsWith("$del")) {
-    index = parseInt(msg.content.split("$del ")[1])
-    deleteEncouragements(index)
-    msg.channel.send("Encouraging message deleted.")
-  }
-
   if (msg.content.toLowerCase().startsWith("!birthdays")) {
-    db.get("encouragements"). then(encouragements => {
-      msg.channel.send(encouragements)
-    })
+
+    
+    const bdays = boiBirthdays["data"]
+
+      for (bday of bdays) {
+        birthdaysEmbed.addFields({
+          name: bday.name, value: bday.bdayday + " - " + getBdayMonthByNumber(bday.bdaymonth)
+        }
+        )
+      }
+
+    msg.channel.send(birthdaysEmbed);
   }
 
-  if (msg.content.startsWith("$responding")) {
-    value = msg.content.split("$responding ")[1]
+  if (msg.content.toLowerCase() !== "!birthdays" &&     msg.content.toLowerCase().startsWith("!birthday ")) {
 
-    if (value.toLowerCase() === "true") {
-      db.set("responding", true)
-      msg.channel.send("Responding is on.")
-    } else {
-      db.set("responding", false)
-      msg.channel.send("Responding is off.")
+      bdayBoiName = msg.content.split("!birthday ")[1]
+
+      const bdayBoiDetails = boiBirthdays["data"].filter(function (e) {
+        return e.name.toLowerCase() === bdayBoiName.toLowerCase();
+      })
+
+
+      if (bdayBoiDetails.length === 0) {
+
+        msg.channel.send('Naam toh sahi se daalo na bhai. Ese likho "!birthday Shashwat"')
+
+      } else {
+
+        const bdayBoiDetail = bdayBoiDetails[0]
+        msg.channel.send(bdayBoiDetail.name + "'s birthday is on " + bdayBoiDetail.bdayday + " " + getBdayMonthByNumber(bdayBoiDetail.bdaymonth))
+
+      }
+
+  }
+
+  function getBdayMonthByNumber(bdayMonth) {
+    switch (bdayMonth) {
+      case "01":
+      return "January"
+      break
+      case "02":
+      return "February"
+      break
+      case "03":
+      return "March"
+      break
+      case "04":
+      return "April"
+      break
+      case "05":
+      return "May"
+      break
+      case "06":
+      return "June"
+      break
+      case "07":
+      return "July"
+      break
+      case "08":
+      return "August"
+      break
+      case "09":
+      return "September"
+      break
+      case "10":
+      return "October"
+      break
+      case "11":
+      return "November"
+      break
+      case "12":
+      return "December"
+      break;
+
     }
   }
 
