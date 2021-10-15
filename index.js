@@ -5,7 +5,7 @@ const keepAlive = require("./server.js")
 const db = new Database()
 const client = new Discord.Client()
 const ytdl = require('ytdl-core');
-
+const yts = require("yt-search");
 const SERVER_NAME = "Testing2"
 const CHANNEL_NAME = "bois-chet"
 
@@ -77,9 +77,9 @@ const boiBirthdays = {
     },
     {
       "name": "Raghu",
-      "bdayday": "14",
-      "bdaymonth": "10",
-      "bdayDoneForYear": "2020"
+      "bdayday": "24",
+      "bdaymonth": "09",
+      "bdayDoneForYear": "2021"
     },
     {
       "name": "Pranav",
@@ -261,7 +261,7 @@ const initialMessageEmbed = new Discord.MessageEmbed()
  * Method to call when the client is ready to recieve bot interaction.
  */
 client.on("ready", async () => {
-  // get Bot user tag
+  //get Bot user tag
   console.log(`Logged in as ${client.user.tag}!`)
 
   // get all the servers associated with the Bot in a collection of map
@@ -280,7 +280,7 @@ client.on("ready", async () => {
   //channel.send(initialMessageEmbed);
   await setBdays();
   // check if the current day is a birthday of someone
-    setInterval(checkBday, 3000, channel)
+  setInterval(checkBday, 3000, channel)
 
 })
 
@@ -300,7 +300,7 @@ const birthdaysEmbed = new Discord.MessageEmbed()
 	.setTitle('BOIBOT')
 	.setDescription('Bois, so ye rahe sab k birthdays. Dekh lo re.')
 	.setTimestamp()
-	.setFooter('Chalo ho gya. Bye Bye.');
+	//.setFooter('Chalo ho gya. Bye Bye.');
 
 
 client.on("message", msg => {
@@ -378,8 +378,6 @@ client.on("message", msg => {
     } else if (msg.content.startsWith("!stop")) {
       stop(msg, serverQueue);
       return;
-    } else {
-      msg.channel.send("You need to enter a valid command!");
     }
 
   function getBdayMonthByNumber(bdayMonth) {
@@ -441,11 +439,15 @@ async function execute(message, serverQueue) {
     );
   }
 
-  const songInfo = await ytdl.getInfo(args[1]);
-  const song = {
-        title: songInfo.videoDetails.title,
-        url: songInfo.videoDetails.video_url,
-   };
+// Searches YouTube with the message content (this joins the arguments
+// together because songs can have spaces)
+const {videos} = await yts(args.slice(1).join(" "));
+if (!videos.length) return message.channel.send("No songs were found!");
+const song = {
+  title: videos[0].title,
+  url: videos[0].url
+};
+
 
   if (!serverQueue) {
     const queueContruct = {
@@ -515,7 +517,7 @@ function play(guild, song) {
     })
     .on("error", error => console.error(error));
   dispatcher.setVolumeLogarithmic(serverQueue.volume / 5);
-  serverQueue.textChannel.send(`Start playing: **${song.title}**`);
+  serverQueue.textChannel.send(`Ab baj rha hai: **${song.title}**`);
 }
 
 keepAlive()
