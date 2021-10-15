@@ -4,9 +4,12 @@ const Database = require("@replit/database")
 const keepAlive = require("./server.js")
 const db = new Database()
 const client = new Discord.Client()
+const ytdl = require('ytdl-core');
 
 const SERVER_NAME = "Testing2"
 const CHANNEL_NAME = "bois-chet"
+
+const queue = new Map();
 
 const sadWords = ["sad", "depressed", "unhappy", "angry"]
 
@@ -20,7 +23,7 @@ const boiBirthdays = {
   "data" : [
     {
       "name": "Dhote",
-      "bdayday": "4",
+      "bdayday": "04",
       "bdaymonth": "02",
       "bdayDoneForYear": "2021"
     },
@@ -74,7 +77,7 @@ const boiBirthdays = {
     },
     {
       "name": "Raghu",
-      "bdayday": "13",
+      "bdayday": "14",
       "bdaymonth": "10",
       "bdayDoneForYear": "2020"
     },
@@ -119,25 +122,22 @@ const boiBirthdays = {
 
 // To do
 // // to be removed in actual server
-db.delete("birthdays7").then(() => {});
+//db.delete("birthdays7").then(() => {});
 
-db.get("birthdays7").then(birthdays7 => {
-  if (!birthdays7 || birthdays7.length < 1) {
-    db.set("birthdays7", boiBirthdays)
-      console.log("Birthdays db was empty or non-existing but not anymore!")
-  }
-})
+function setBdays() {
+  db.get("birthdays7").then(birthdays7 => {
+    if (!birthdays7 || birthdays7.length < 1) {
+      db.set("birthdays7", boiBirthdays)
+        console.log("Birthdays db was empty or non-existing but not anymore!")
+    }
+  })
+}
+
 
 // db.get("birthdays").then(birthdays => {
 //   const bday = birthdays["data"]
 //   console.log(bday[0].bdaymonth)
 // })
-
-db.get("encouragements").then(encouragements => {
-  if (!encouragements || encouragements.length < 1) {
-    db.set("encouragements", startedEncouragements)   
-  }
-})
 
 
 function getQuote() {
@@ -190,13 +190,12 @@ function checkBday(channel) {
   /**
    * We iterate through the DB and check if today is anyone's birthday. If it is then we just simply send the bday message and update the bdayDoneForYear to avoid any repeated wishes.
    */
-  try {
     db.get("birthdays7").then(birthdays7 => {
     const bdays = birthdays7["data"];
       for (bday of bdays) {
       if ((currentMonth === bday.bdaymonth && currentDay === bday.bdayday) && (currentYear > bday.bdayDoneForYear)) {
 
-        channel.send("Happy Birthday " + bday.name + "!!", {files: ["resources/images/happyBday.jpg"]})
+        channel.send("Happy Birthday " + bday.name + "!!", {files: ["resources/images/" + bday.name + ".jpg"]})
         isBdaySetToday = 1;
         bdayBoiName = bday.name;
         bday.bdayDoneForYear = currentYear;
@@ -208,10 +207,8 @@ function checkBday(channel) {
       db.set("birthdays7", birthdays7)
       }
       //channel.send("dd")
-    }) 
-  } catch (err) {
-    console.log("Bas aa gya error")
-  }
+    }).catch() //This throws an error (Undefined, etc)
+   .catch(e => console.log(e))
   
 
 }
@@ -263,7 +260,7 @@ const initialMessageEmbed = new Discord.MessageEmbed()
 /**
  * Method to call when the client is ready to recieve bot interaction.
  */
-client.on("ready", () => {
+client.on("ready", async () => {
   // get Bot user tag
   console.log(`Logged in as ${client.user.tag}!`)
 
@@ -281,13 +278,9 @@ client.on("ready", () => {
   }).values().next().value
 
   //channel.send(initialMessageEmbed);
-
+  await setBdays();
   // check if the current day is a birthday of someone
-  try {
     setInterval(checkBday, 3000, channel)
-  } catch(err) {
-    console.log("bas aa gya trycatch me");
-  }
 
 })
 
@@ -374,6 +367,21 @@ client.on("message", msg => {
 
   }
 
+  const serverQueue = queue.get(msg.guild.id);
+
+    if (msg.content.startsWith("!play")) {
+      execute(msg, serverQueue);
+      return;
+    } else if (msg.content.startsWith("!skip")) {
+      skip(msg, serverQueue);
+      return;
+    } else if (msg.content.startsWith("!stop")) {
+      stop(msg, serverQueue);
+      return;
+    } else {
+      msg.channel.send("You need to enter a valid command!");
+    }
+
   function getBdayMonthByNumber(bdayMonth) {
     switch (bdayMonth) {
       case "01":
@@ -418,6 +426,97 @@ client.on("message", msg => {
 
 })
 
+async function execute(message, serverQueue) {
+  const args = message.content.split(" ");
+
+  const voiceChannel = message.member.voice.channel;
+  if (!voiceChannel)
+    return message.channel.send(
+      "You need to be in a voice channel to play music!"
+    );
+  const permissions = voiceChannel.permissionsFor(message.client.user);
+  if (!permissions.has("CONNECT") || !permissions.has("SPEAK")) {
+    return message.channel.send(
+      "I need the permissions to join and speak in your voice channel!"
+    );
+  }
+
+  const songInfo = await ytdl.getInfo(args[1]);
+  const song = {
+        title: songInfo.videoDetails.title,
+        url: songInfo.videoDetails.video_url,
+   };
+
+  if (!serverQueue) {
+    const queueContruct = {
+      textChannel: message.channel,
+      voiceChannel: voiceChannel,
+      connection: null,
+      songs: [],
+      volume: 5,
+      playing: true
+    };
+
+    queue.set(message.guild.id, queueContruct);
+
+    queueContruct.songs.push(song);
+
+    try {
+      var connection = await voiceChannel.join();
+      queueContruct.connection = connection;
+      play(message.guild, queueContruct.songs[0]);
+    } catch (err) {
+      console.log(err);
+      queue.delete(message.guild.id);
+      return message.channel.send(err);
+    }
+  } else {
+    serverQueue.songs.push(song);
+    return message.channel.send(`${song.title} has been added to the queue!`);
+  }
+}
+
+function skip(message, serverQueue) {
+  if (!message.member.voice.channel)
+    return message.channel.send(
+      "You have to be in a voice channel to stop the music!"
+    );
+  if (!serverQueue)
+    return message.channel.send("There is no song that I could skip!");
+  serverQueue.connection.dispatcher.end();
+}
+
+function stop(message, serverQueue) {
+  if (!message.member.voice.channel)
+    return message.channel.send(
+      "You have to be in a voice channel to stop the music!"
+    );
+    
+  if (!serverQueue)
+    return message.channel.send("There is no song that I could stop!");
+    
+  serverQueue.songs = [];
+  serverQueue.connection.dispatcher.end();
+}
+
+function play(guild, song) {
+  const serverQueue = queue.get(guild.id);
+  if (!song) {
+    serverQueue.voiceChannel.leave();
+    queue.delete(guild.id);
+    return;
+  }
+
+  const dispatcher = serverQueue.connection
+    .play(ytdl(song.url))
+    .on("finish", () => {
+      serverQueue.songs.shift();
+      play(guild, serverQueue.songs[0]);
+    })
+    .on("error", error => console.error(error));
+  dispatcher.setVolumeLogarithmic(serverQueue.volume / 5);
+  serverQueue.textChannel.send(`Start playing: **${song.title}**`);
+}
 
 keepAlive()
 client.login(process.env.TOKEN)
